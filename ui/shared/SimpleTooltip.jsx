@@ -49,7 +49,8 @@ export default class SimpleTooltip extends React.Component {
 }
 SimpleTooltip.propTypes = {
   text: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.string]).isRequired,
-  tooltipText: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.string]).isRequired,
+  tooltipText: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.string])
+    .isRequired,
   textClass: PropTypes.string,
   placement: PropTypes.string,
 };
