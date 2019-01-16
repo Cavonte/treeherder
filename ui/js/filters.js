@@ -14,7 +14,7 @@ treeherder.filter('getRevisionUrl', function () {
         return '';
     };
 });
-
+// TODO replace usage with displayNumber in helpers file
 treeherder.filter('displayNumber', ['$filter', function ($filter) {
     return function (input) {
         if (Number.isNaN(input)) {

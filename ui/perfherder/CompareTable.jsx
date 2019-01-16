@@ -1,10 +1,11 @@
 import React from 'react';
-import { Table } from 'reactstrap';
+import { Table, UncontrolledTooltip } from 'reactstrap';
 import { react2angular } from 'react2angular/index.es2015';
 import PropTypes from 'prop-types';
-import '../css/perf.css';
 
 import perf from '../js/perf';
+import { displayNumber } from './helpers';
+import SimpleTooltip from '../shared/SimpleTooltip';
 
 export default class CompareTable extends React.Component {
   getCompareClass = (data, type) => {  
@@ -15,6 +16,9 @@ export default class CompareTable extends React.Component {
     if (type === 'bar' || type === 'row') return '';
     return data.className;
   }
+
+  deltaTooltipText = (delta, deltaPercentage) => `Mean difference: ${delta} (= ${deltaPercentage}% better)`;
+
   render() {
     const { compareResults } = this.props;
     return (
@@ -37,31 +41,50 @@ export default class CompareTable extends React.Component {
           </tr>
         </thead>
         <tbody>
-        {data.map((platform, index) =>
-        <tr key={index} className={this.getCompareClass(platform, 'row')}>
-          <th className="text-left font-weight-normal">{platform.name}
-            {platform.links &&
+        {data.map((results, index) =>
+        <tr key={index} className={this.getCompareClass(results, 'row')}>
+          <th className="text-left font-weight-normal">{results.name}
+            {results.links &&
             <span className="result-links">
-              {platform.links.map(link => <span key={link.title}><a href={link.href}>{` ${link.title}`}</a></span>)}
+              {results.links.map(link => <span key={link.title}><a href={link.href}>{` ${link.title}`}</a></span>)}
             </span>}
           </th>
-        </tr>)}
-        {/* <tr ng-class="getCompareClasses(compareResult, 'row')" ng-repeat="compareResult in compareResults.results | orderBy: 'name' track by $index">
-          <td class="test-title">{{compareResult.name}}&nbsp;&nbsp;
-            <span class="result-links" ng-if="compareResult.links.length > 0">
-              <span ng-repeat="link in compareResult.links track by link.title">
-                <a ng-href="{{link.href}}">{{link.title}}</a>
-                <span ng-if="!$last"> · </span>
-              </span>
-            </span>
+          <td>
+          {/* <ph-average value="{{compareResult.originalValue}}"
+                      stddev="{{compareResult.originalStddev}}"
+                      stddevpct="{{compareResult.originalStddevPct}}"
+                      replicates="compareResult.originalRuns"></ph-average> */}
           </td>
-        </tr> */}
-          {/* <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr> */}
+          <td>
+            {results.originalValue < results.newValue &&
+            <span className={this.getCompareClass(results)}>
+              &lt;
+            </span>}
+            {results.originalValue > results.newValue &&
+            <span className={this.getCompareClass(results)}>
+              &gt;
+            </span>}
+          </td>
+          <td>
+            {/* <ph-average value="{{compareResult.newValue}}"
+                        stddev="{{compareResult.newStddev}}"
+                        stddevpct="{{compareResult.newStddevPct}}"
+                        replicates="compareResult.newRuns"></ph-average> */}
+          </td>
+          <td className={this.getCompareClass(results)}>
+          {results.delta && results.newIsBetter &&
+          <SimpleTooltip 
+            textClass="detail-hint"
+            text={displayNumber(results.deltaPercentage)}
+            tooltipText={this.deltaTooltipText(displayNumber(results.delta), Math.abs(results.deltaPercentage))}
+            placement="top"
+          />}
+          {/* <span ng-if="compareResult.delta  && !compareResult.newIsBetter" class="detail-hint" uib-tooltip="Mean difference: {{compareResult.delta|displayNumber}} (= {{compareResult.deltaPercentage|absoluteValue|displayNumber}}% worse)">
+            {{compareResult.deltaPercentage|displayNumber}}%
+          </span> */}
+        </td>
+
+        </tr>)}
         </tbody>
       </Table>)
     );
