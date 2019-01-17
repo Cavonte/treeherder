@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, UncontrolledTooltip } from 'reactstrap';
+import { Table } from 'reactstrap';
 import { react2angular } from 'react2angular/index.es2015';
 import PropTypes from 'prop-types';
 
@@ -19,11 +19,13 @@ export default class CompareTable extends React.Component {
     return data.className;
   };
 
-  deltaTooltipText = (delta, deltaPercentage) =>
-    `Mean difference: ${delta} (= ${deltaPercentage}% better)`;
+  deltaTooltipText = (delta, percentage, improvement) =>
+    `Mean difference: ${displayNumber(delta)} (= ${Math.abs(
+      displayNumber(percentage))}% ${improvement ? 'better' : 'worse'})`;
 
   render() {
     const { compareResults } = this.props;
+
     return Object.entries(compareResults).map(([testName, data]) => (
       <Table sz="small" className="compare-table" key={testName}>
         <thead>
@@ -47,8 +49,8 @@ export default class CompareTable extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {data.map((results, index) => (
-            <tr key={index} className={this.getCompareClass(results, 'row')}>
+          {data.map((results) => (
+            <tr key={results.name} className={this.getCompareClass(results, 'row')}>
               <th className="text-left font-weight-normal">
                 {results.name}
                 {results.links && (
@@ -82,20 +84,21 @@ export default class CompareTable extends React.Component {
                         replicates="compareResult.newRuns"></ph-average> */}
               </td>
               <td className={this.getCompareClass(results)}>
-                {results.delta && results.newIsBetter && (
+                {results.delta && Math.abs(displayNumber(results.deltaPercentage)) !== 0 && (
                   <SimpleTooltip
                     textClass="detail-hint"
                     text={displayNumber(results.deltaPercentage)}
                     tooltipText={this.deltaTooltipText(
-                      displayNumber(results.delta),
-                      Math.abs(results.deltaPercentage),
+                      results.delta,
+                      results.deltaPercentage,
+                      results.newIsBetter
                     )}
                     placement="top"
                   />
                 )}
-                {/* <span ng-if="compareResult.delta  && !compareResult.newIsBetter" class="detail-hint" uib-tooltip="Mean difference: {{compareResult.delta|displayNumber}} (= {{compareResult.deltaPercentage|absoluteValue|displayNumber}}% worse)">
-            {{compareResult.deltaPercentage|displayNumber}}%
-          </span> */}
+                {results.delta && Math.abs(displayNumber(results.deltaPercentage)) === 0 && (
+                  <span>{displayNumber(results.deltaPercentage)}</span>
+                )}
               </td>
             </tr>
           ))}
@@ -108,10 +111,10 @@ export default class CompareTable extends React.Component {
 CompareTable.propTypes = {
   titles: PropTypes.shape({}).isRequired,
   compareResults: PropTypes.shape({}).isRequired,
-  testList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  frameworks: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  filterOptions: PropTypes.shape({}).isRequired,
-  filterByFramework: PropTypes.number.isRequired,
+  // testList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // frameworks: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  // filterOptions: PropTypes.shape({}).isRequired,
+  // filterByFramework: PropTypes.number.isRequired,
 };
 
 perf.component(
