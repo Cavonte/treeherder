@@ -30,7 +30,7 @@ treeherder.filter('absoluteValue', function () {
         return Math.abs(input);
     };
 });
-
+// TODO remove
 treeherder.filter('abbreviatedNumber', function () {
     return input =>
         ((input.toString().length <= 5) ? input : numeral(input).format('0.0a'));
