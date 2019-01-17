@@ -25,7 +25,13 @@ export default class SimpleTooltip extends React.Component {
   };
 
   render() {
-    const { text, tooltipText, placement, textClass, tooltipClass } = this.props;
+    const {
+      text,
+      tooltipText,
+      placement,
+      textClass,
+      tooltipClass,
+    } = this.props;
     const { tooltipOpen, target } = this.state;
     return (
       <div>

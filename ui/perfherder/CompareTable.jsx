@@ -7,6 +7,7 @@ import perf from '../js/perf';
 import SimpleTooltip from '../shared/SimpleTooltip';
 
 import { displayNumber } from './helpers';
+import TableAverage from './TableAverage';
 
 export default class CompareTable extends React.Component {
   getCompareClass = (data, type) => {
@@ -21,7 +22,8 @@ export default class CompareTable extends React.Component {
 
   deltaTooltipText = (delta, percentage, improvement) =>
     `Mean difference: ${displayNumber(delta)} (= ${Math.abs(
-      displayNumber(percentage))}% ${improvement ? 'better' : 'worse'})`;
+      displayNumber(percentage),
+    )}% ${improvement ? 'better' : 'worse'})`;
 
   render() {
     const { compareResults } = this.props;
@@ -49,8 +51,11 @@ export default class CompareTable extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {data.map((results) => (
-            <tr key={results.name} className={this.getCompareClass(results, 'row')}>
+          {data.map(results => (
+            <tr
+              key={results.name}
+              className={this.getCompareClass(results, 'row')}
+            >
               <th className="text-left font-weight-normal">
                 {results.name}
                 {results.links && (
@@ -63,12 +68,12 @@ export default class CompareTable extends React.Component {
                   </span>
                 )}
               </th>
-              <td>
-                {/* <ph-average value="{{compareResult.originalValue}}"
-                      stddev="{{compareResult.originalStddev}}"
-                      stddevpct="{{compareResult.originalStddevPct}}"
-                      replicates="compareResult.originalRuns"></ph-average> */}
-              </td>
+              <TableAverage
+                value={results.originalValue}
+                stddev={results.originalStddev}
+                stddevpct={results.originalStddevPct}
+                replicates={results.originalRuns}
+              />
               <td>
                 {results.originalValue < results.newValue && (
                   <span className={this.getCompareClass(results)}>&lt;</span>
@@ -84,21 +89,23 @@ export default class CompareTable extends React.Component {
                         replicates="compareResult.newRuns"></ph-average> */}
               </td>
               <td className={this.getCompareClass(results)}>
-                {results.delta && Math.abs(displayNumber(results.deltaPercentage)) !== 0 && (
-                  <SimpleTooltip
-                    textClass="detail-hint"
-                    text={displayNumber(results.deltaPercentage)}
-                    tooltipText={this.deltaTooltipText(
-                      results.delta,
-                      results.deltaPercentage,
-                      results.newIsBetter
-                    )}
-                    placement="top"
-                  />
-                )}
-                {results.delta && Math.abs(displayNumber(results.deltaPercentage)) === 0 && (
-                  <span>{displayNumber(results.deltaPercentage)}</span>
-                )}
+                {results.delta &&
+                  Math.abs(displayNumber(results.deltaPercentage)) !== 0 && (
+                    <SimpleTooltip
+                      textClass="detail-hint"
+                      text={displayNumber(results.deltaPercentage)}
+                      tooltipText={this.deltaTooltipText(
+                        results.delta,
+                        results.deltaPercentage,
+                        results.newIsBetter,
+                      )}
+                      placement="top"
+                    />
+                  )}
+                {results.delta &&
+                  Math.abs(displayNumber(results.deltaPercentage)) === 0 && (
+                    <span>{displayNumber(results.deltaPercentage)}</span>
+                  )}
               </td>
             </tr>
           ))}

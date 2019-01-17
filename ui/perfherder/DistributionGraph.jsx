@@ -5,73 +5,77 @@ import { Table } from 'reactstrap';
 export default class DistributionGraph extends React.Component {
   constructor(props) {
     super(props);
-    this.canvas = React.createRef();
-    this.ctx = this.canvas.getContext("2d");
-    this.ctx.globalAlpha = 0.3;
+    this.canvasRef = React.createRef();
+    this.ctx = null;
     this.state = {
-        // target: null,
       minValue: null,
       maxValue: null,
     };
   }
 
-  // updateTarget = target => {
-  //   if (!this.state.target) {
-  //     this.setState({ target });
-  //   }
-  // };
-  
   componentDidMount() {
+    console.log(this.canvasRef);
+    this.ctx = this.canvasRef.getContext('2d');
+    this.ctx.globalAlpha = 0.3;
     const [minValue, maxValue] = this.calculateValues();
-    this.setState({ minValue, maxValue }, () => this.plotValues());
+    this.setState({ minValue, maxValue });
   }
 
+  componentDidUpdate() {
+    this.plotValues();
+  }
   calculateValues = () => {
     const { replicates } = this.props;
     let maxValue = Math.max.apply(null, replicates);
     let minValue = Math.min.apply(null, replicates);
 
     if (maxValue - minValue > 1) {
-        maxValue = Math.ceil(maxValue * 1.001);
-        minValue = Math.floor(minValue / 1.001);
+      maxValue = Math.ceil(maxValue * 1.001);
+      minValue = Math.floor(minValue / 1.001);
     }
     return [minValue, maxValue];
-  }
+  };
 
   plotValues = () => {
-    this.props.replicates.forEach((value) => {
+    const { maxValue, minValue } = this.state;
+    this.props.replicates.forEach(value => {
       this.ctx.beginPath();
-      this.ctx.arc(180 / (maxValue - minValue) * (value - minValue) + 5, 18, 5, 0, 360);
+      this.ctx.arc(
+        (180 / (maxValue - minValue)) * (value - minValue) + 5,
+        18,
+        5,
+        0,
+        360,
+      );
       this.ctx.fillStyle = 'white';
       this.ctx.fill();
     });
-  }
-
-  abbreviatedNumber = num => ((num.toString().length <= 5) ? num : numeral(num).format('0.0a'));
+  };
+  // TODO where does numberal come from?
+  // abbreviatedNumber = num =>
+  //   num.toString().length <= 5 ? num : numeral(num).format('0.0a');
 
   render() {
     const { minValue, maxValue } = this.state;
 
     return (
       <Table className="tooltip-table">
+        {minValue && maxValue && 
         <tr>
-          <td className="value-column">{this.abbreviatedNumber(minValue)}</td>
+          <td className="value-column">{minValue}</td>
           <td className="distribution-column">
-            <canvas ref={this.canvas} width={190} height={30}></canvas>
+            <canvas ref={this.canvasRef} width={190} height={30} />
           </td>
-          <td className="value-column">{this.abbreviatedNumber(maxValue)}</td>
-        </tr>
+          <td className="value-column">{maxValue}</td>
+        </tr>}
       </Table>
     );
   }
 }
 
 DistributionGraph.propTypes = {
-  replicates: PropTypes.arrayOf(
-    PropTypes.number
-  ).isRequired,
+  replicates: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
-
 
 // treeherder.component('distributionGraph', {
 //   template: `
