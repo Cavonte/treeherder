@@ -38,7 +38,7 @@ export default class SimpleTooltip extends React.Component {
             isOpen={tooltipOpen}
             target={target}
             toggle={this.toggle}
-            className="tooltip"
+            className={tooltipClass}
           >
             {tooltipText}
           </Tooltip>
@@ -53,9 +53,11 @@ SimpleTooltip.propTypes = {
     .isRequired,
   textClass: PropTypes.string,
   placement: PropTypes.string,
+  tooltipClass: PropTypes.string,
 };
 
 SimpleTooltip.defaultProps = {
   textClass: '',
   placement: 'left',
+  tooltipClass: 'tooltip',
 };
