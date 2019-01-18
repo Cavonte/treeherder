@@ -1,28 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tooltip } from 'reactstrap';
+import { UncontrolledTooltip } from 'reactstrap';
 
 export default class SimpleTooltip extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      tooltipOpen: false,
-      target: null,
-    };
+    this.tooltipRef = React.createRef();
   }
-
-  updateTarget = target => {
-    if (!this.state.target) {
-      this.setState({ target });
-    }
-  };
-
-  toggle = () => {
-    this.setState({
-      tooltipOpen: !this.state.tooltipOpen,
-    });
-  };
 
   render() {
     const {
@@ -32,23 +16,19 @@ export default class SimpleTooltip extends React.Component {
       textClass,
       tooltipClass,
     } = this.props;
-    const { tooltipOpen, target } = this.state;
+
     return (
       <div>
-        <span ref={this.updateTarget} className={textClass}>
+        <span ref={this.tooltipRef} className={textClass}>
           {text}
         </span>
-        {target && (
-          <Tooltip
+          <UncontrolledTooltip
             placement={placement}
-            isOpen={tooltipOpen}
-            target={target}
-            toggle={this.toggle}
+            target={this.tooltipRef}
             className={tooltipClass}
           >
             {tooltipText}
-          </Tooltip>
-        )}
+          </UncontrolledTooltip>
       </div>
     );
   }

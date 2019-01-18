@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import numeral from 'numeral';
 import { Table } from 'reactstrap';
 
 export default class DistributionGraph extends React.Component {
   constructor(props) {
     super(props);
+
     this.canvasRef = React.createRef();
     this.context = null;
-    this.values = this.calculateValues()
     this.state = {
       minValue: null,
       maxValue: null,
@@ -28,7 +29,7 @@ export default class DistributionGraph extends React.Component {
       const canvas = this.canvasRef.current;
       this.context = canvas.getContext('2d');
       this.context.globalAlpha = 0.3;
-      this.plotValues();  
+      this.plotValues();
     }
   }
 
@@ -49,30 +50,40 @@ export default class DistributionGraph extends React.Component {
     const { minValue, maxValue } = this.state;
     this.props.replicates.forEach(value => {
       this.context.beginPath();
-      this.context.arc(180 / (maxValue - minValue) * (value - minValue) + 5, 18, 5, 0, 360);
+      this.context.arc(
+        (180 / (maxValue - minValue)) * (value - minValue) + 5,
+        18,
+        5,
+        0,
+        360,
+      );
       this.context.fillStyle = 'white';
       this.context.fill();
     });
   };
-  // TODO where does numberal come from?
-  // abbreviatedNumber = num =>
-  //   num.toString().length <= 5 ? num : numeral(num).format('0.0a');
+
+  abbreviatedNumber = num =>
+    num.toString().length <= 5 ? num : numeral(num).format('0.0a');
 
   render() {
-    console.log('render');
     const { minValue, maxValue } = this.state;
     return (
       <Table className="tooltip-table">
-        {(minValue || maxValue) &&
-        <tbody>
-          <tr>
-            <td className="value-column">{minValue}</td>
-            <td className="distribution-column">
-              <canvas ref={this.canvasRef} height={30} />
-            </td>
-            <td className="value-column">{maxValue}</td>
-          </tr>
-        </tbody>}
+        {(minValue || maxValue) && (
+          <tbody>
+            <tr>
+              <td className="value-column">
+                {this.abbreviatedNumber(minValue)}
+              </td>
+              <td className="distribution-column">
+                <canvas ref={this.canvasRef} width={150} height={30} />
+              </td>
+              <td className="value-column">
+                {this.abbreviatedNumber(maxValue)}
+              </td>
+            </tr>
+          </tbody>
+        )}
       </Table>
     );
   }

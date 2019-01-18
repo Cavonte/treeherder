@@ -82,12 +82,12 @@ export default class CompareTable extends React.Component {
                   <span className={this.getCompareClass(results)}>&gt;</span>
                 )}
               </td>
-              <td>
-                {/* <ph-average value="{{compareResult.newValue}}"
-                        stddev="{{compareResult.newStddev}}"
-                        stddevpct="{{compareResult.newStddevPct}}"
-                        replicates="compareResult.newRuns"></ph-average> */}
-              </td>
+              <TableAverage
+                value={results.newValue}
+                stddev={results.newStddev}
+                stddevpct={results.newStddevPct}
+                replicates={results.newRuns}
+              />
               <td className={this.getCompareClass(results)}>
                 {results.delta &&
                   Math.abs(displayNumber(results.deltaPercentage)) !== 0 && (
