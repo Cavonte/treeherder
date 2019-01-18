@@ -25,7 +25,9 @@ export default class SimpleTooltip extends React.Component {
           <UncontrolledTooltip
             placement={placement}
             target={this.tooltipRef}
-            className={tooltipClass}
+            className="tooltip"
+            innerClassName={tooltipClass}
+            autohide={false}
           >
             {tooltipText}
           </UncontrolledTooltip>
@@ -45,5 +47,5 @@ SimpleTooltip.propTypes = {
 SimpleTooltip.defaultProps = {
   textClass: '',
   placement: 'left',
-  tooltipClass: 'tooltip',
+  tooltipClass: '',
 };

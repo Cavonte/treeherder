@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import numeral from 'numeral';
 import { Table } from 'reactstrap';
 
-export default class DistributionGraph extends React.Component {
+export default class TooltipGraph extends React.Component {
   constructor(props) {
     super(props);
 
@@ -76,7 +76,7 @@ export default class DistributionGraph extends React.Component {
                 {this.abbreviatedNumber(minValue)}
               </td>
               <td className="distribution-column">
-                <canvas ref={this.canvasRef} width={150} height={30} />
+                <canvas ref={this.canvasRef} width={190} height={30} />
               </td>
               <td className="value-column">
                 {this.abbreviatedNumber(maxValue)}
@@ -89,6 +89,6 @@ export default class DistributionGraph extends React.Component {
   }
 }
 
-DistributionGraph.propTypes = {
+TooltipGraph.propTypes = {
   replicates: PropTypes.arrayOf(PropTypes.number).isRequired,
 };

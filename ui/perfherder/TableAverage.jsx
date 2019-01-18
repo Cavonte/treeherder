@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import SimpleTooltip from '../shared/SimpleTooltip';
 
-import DistributionGraph from './DistributionGraph';
+import TooltipGraph from './TooltipGraph';
 import { displayNumber } from './helpers';
 
 const TableAverage = ({ value, stddev, stddevpct, replicates }) => {
@@ -27,8 +27,8 @@ const TableAverage = ({ value, stddev, stddevpct, replicates }) => {
           tooltipText={
             replicates.length > 1 ? 
             <React.Fragment>
-              <p className="pb-2">{tooltipText}</p>
-              <DistributionGraph replicates={replicates} />
+              <p className="py-1">{tooltipText}</p>
+              <TooltipGraph replicates={replicates} />
             </React.Fragment> : tooltipText
           }
           placement="top"
