@@ -17,7 +17,7 @@ const TableAverage = ({ value, stddev, stddevpct, replicates }) => {
   }
   return (
     <td>
-      {tooltipText ? (
+      {replicates.length ? (
         <SimpleTooltip
           textClass="detail-hint"
           text={`${displayNumber(value)} ${'\u00B1'} ${displayNumber(stddevpct)}`}

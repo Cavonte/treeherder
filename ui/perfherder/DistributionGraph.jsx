@@ -6,7 +6,8 @@ export default class DistributionGraph extends React.Component {
   constructor(props) {
     super(props);
     this.canvasRef = React.createRef();
-    this.ctx = null;
+    this.context = null;
+    this.values = this.calculateValues()
     this.state = {
       minValue: null,
       maxValue: null,
@@ -14,18 +15,26 @@ export default class DistributionGraph extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.canvasRef);
-    this.ctx = this.canvasRef.getContext('2d');
-    this.ctx.globalAlpha = 0.3;
     const [minValue, maxValue] = this.calculateValues();
     this.setState({ minValue, maxValue });
   }
 
-  componentDidUpdate() {
-    this.plotValues();
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state !== nextState;
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.minValue !== this.state.minValue) {
+      const canvas = this.canvasRef.current;
+      this.context = canvas.getContext('2d');
+      this.context.globalAlpha = 0.3;
+      this.plotValues();  
+    }
+  }
+
   calculateValues = () => {
     const { replicates } = this.props;
+
     let maxValue = Math.max.apply(null, replicates);
     let minValue = Math.min.apply(null, replicates);
 
@@ -37,18 +46,12 @@ export default class DistributionGraph extends React.Component {
   };
 
   plotValues = () => {
-    const { maxValue, minValue } = this.state;
+    const { minValue, maxValue } = this.state;
     this.props.replicates.forEach(value => {
-      this.ctx.beginPath();
-      this.ctx.arc(
-        (180 / (maxValue - minValue)) * (value - minValue) + 5,
-        18,
-        5,
-        0,
-        360,
-      );
-      this.ctx.fillStyle = 'white';
-      this.ctx.fill();
+      this.context.beginPath();
+      this.context.arc(180 / (maxValue - minValue) * (value - minValue) + 5, 18, 5, 0, 360);
+      this.context.fillStyle = 'white';
+      this.context.fill();
     });
   };
   // TODO where does numberal come from?
@@ -56,18 +59,20 @@ export default class DistributionGraph extends React.Component {
   //   num.toString().length <= 5 ? num : numeral(num).format('0.0a');
 
   render() {
+    console.log('render');
     const { minValue, maxValue } = this.state;
-
     return (
       <Table className="tooltip-table">
-        {minValue && maxValue && 
-        <tr>
-          <td className="value-column">{minValue}</td>
-          <td className="distribution-column">
-            <canvas ref={this.canvasRef} width={190} height={30} />
-          </td>
-          <td className="value-column">{maxValue}</td>
-        </tr>}
+        {(minValue || maxValue) &&
+        <tbody>
+          <tr>
+            <td className="value-column">{minValue}</td>
+            <td className="distribution-column">
+              <canvas ref={this.canvasRef} height={30} />
+            </td>
+            <td className="value-column">{maxValue}</td>
+          </tr>
+        </tbody>}
       </Table>
     );
   }
@@ -76,38 +81,3 @@ export default class DistributionGraph extends React.Component {
 DistributionGraph.propTypes = {
   replicates: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
-
-// treeherder.component('distributionGraph', {
-//   template: `
-//       <table class="tooltip-table">
-//           <tr>
-//               <td class="value-column">{{$ctrl.minValue|abbreviatedNumber}}</td>
-//               <td class="distribution-column"><canvas id="distribution-graph-new" width="190" height="30"></canvas></td>
-//               <td class="value-column">{{$ctrl.maxValue|abbreviatedNumber}}</td>
-//           </tr>
-//       </table>`,
-//   bindings: {
-//       replicates: '<',
-//   },
-//   controller: [function () {
-//       const ctrl = this;
-
-//       ctrl.$onInit = function () {
-//           const cvs = document.getElementById('distribution-graph-new');
-//           const ctx = cvs.getContext('2d');
-//           cvs.setAttribute('id', 'distribution-graph-current');
-//           ctrl.maxValue = Math.max.apply(null, ctrl.replicates);
-//           ctrl.minValue = Math.min.apply(null, ctrl.replicates);
-//           if (ctrl.maxValue - ctrl.minValue > 1) {
-//               ctrl.maxValue = Math.ceil(ctrl.maxValue * 1.001);
-//               ctrl.minValue = Math.floor(ctrl.minValue / 1.001);
-//           }
-//           ctx.globalAlpha = 0.3;
-//           ctrl.replicates.forEach((value) => {
-//               ctx.beginPath();
-//               ctx.arc(180 / (ctrl.maxValue - ctrl.minValue) * (value - ctrl.minValue) + 5, 18, 5, 0, 360);
-//               ctx.fillStyle = 'white';
-//               ctx.fill();
-//           });
-//       };
-//   }],
