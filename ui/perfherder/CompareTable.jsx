@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 import { react2angular } from 'react2angular/index.es2015';
 import PropTypes from 'prop-types';
 
@@ -25,6 +25,16 @@ export default class CompareTable extends React.Component {
       displayNumber(percentage),
     )}% ${improvement ? 'better' : 'worse'})`;
 
+  getCompareClass = ({ isImprovement, isRegression }) => {
+    if (isImprovement) {
+      return 'success';
+    }
+    if (isRegression) {
+      return 'danger';
+    }
+    return 'secondary';
+  }
+  
   render() {
     const { compareResults } = this.props;
 
@@ -106,6 +116,27 @@ export default class CompareTable extends React.Component {
                   Math.abs(displayNumber(results.deltaPercentage)) === 0 && (
                     <span>{displayNumber(results.deltaPercentage)}</span>
                   )}
+              </td>
+              <td>
+                {results.delta &&
+                  <SimpleTooltip
+                    text={
+                      <Progress multi>
+                        <Progress
+                          bar
+                          value={!results.newIsBetter ? (100 - results.magnitude) : results.magnitude}
+                          color={!results.newIsBetter ? "transparent" : this.getCompareClass(results)}
+                        />
+                        <Progress
+                          bar
+                          value={!results.newIsBetter ? results.magnitude : (100 - results.magnitude)}
+                          color={!results.newIsBetter ? this.getCompareClass(results) : "transparent"}
+                        />
+                      </Progress>
+                    }
+                    tooltipText="Relative magnitude of change (scale from 0 - 20%+)"
+                    placement="top"
+                  />}
               </td>
             </tr>
           ))}

@@ -371,7 +371,7 @@ td.compare-regression {
 td.compare-notsure {
   background-image: linear-gradient(to bottom, #FF9500, #FFCB00);
 }
-
+/* TODO some of these can be deleted and replaced with 'success' and 'danger' classes */
 span.compare-improvement {
     color: #80BB2E;
 }
