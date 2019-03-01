@@ -30,6 +30,7 @@ export default class CompareSelectorView extends React.Component {
       newRevision: this.queryParams.newRevision || '',
       errorMessages: [],
       disableButton: true,
+      riskyComparison: "mozilla-centraltry",      
       missingRevision: false,
     };
   }
@@ -50,6 +51,13 @@ export default class CompareSelectorView extends React.Component {
 
     if (newRevision === '') {
       return this.setState({ missingRevision: 'Revision is required' });
+    }
+
+    console.log(originalProject + newProject);
+    if (originalProject + newProject === this.state.riskyComparison)
+    {
+      alert("Warning: Please be aware that comparisons between talos results from try and mozilla-central builds are not reliable.\n"
+      + "For more information, See Bug 1515681 on Bugzilla");
     }
 
     if (originalRevision !== '') {
